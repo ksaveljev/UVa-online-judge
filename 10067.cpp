@@ -1,114 +1,99 @@
 #include <iostream>
-#include <map>
 #include <queue>
 #include <vector>
+#include <map>
+#include <algorithm>
 using namespace std;
 
-struct status {
-	int a, b, c, d;
-};
+vector<int> forbidden;
+vector<int> generated;
+vector<int>::iterator it;
+map<int,bool> taken;
 
-status start, end;
-status forbidden;
-
-vector<status> v;
-map<int,bool> visited;
-
-bool is_forbidden(const status& s) {
-	for (int i = 0, sz = v.size(); i < sz; i++) {
-		if (s.a == v[i].a && s.b == v[i].b && s.c == v[i].c && s.d == v[i].d)
-			return true;
-	}
-	return false;
-}
-
-bool is_visited(const status& s) {
-	return visited.find(s.a * 1000 + s.b * 100 + s.c * 10 + s.d) == visited.end() ? false : true;
-}
-
-status make_move(status s, int move) {
-	status tmp = s;
-
-	switch(move) {
-		case 0:
-			tmp.a = (tmp.a + 1) % 10;
-			break;
-		case 1:
-			tmp.a = (tmp.a + 9) % 10;
-			break;
-		case 2:
-			tmp.b = (tmp.b + 1) % 10;
-			break;
-		case 3:
-			tmp.b = (tmp.b + 9) % 10;
-			break;
-		case 4:
-			tmp.c = (tmp.c + 1) % 10;
-			break;
-		case 5:
-			tmp.c = (tmp.c + 9) % 10;
-			break;
-		case 6:
-			tmp.d = (tmp.d + 1) % 10;
-			break;
-		case 7:
-			tmp.d = (tmp.d + 9) % 10;
-			break;
-	}
-
-	return tmp;
-}
-
-int solve() {
-	status s;
-	pair<status, int> tmp;
-	queue< pair<status, int> > q;
-
-	if (is_forbidden(start))
-		return -1;
+void generate (int start) {
+	int a,b,c,d;
 	
-	q.push(make_pair(start, 0));
+	d = start % 10;
+	start /= 10;
+	c = start % 10;
+	start /= 10;
+	b = start % 10;
+	start /= 10;
+	a = start;
+	
+	generated.push_back ((a + 1 > 9 ? 0 : a + 1) * 1000 + b * 100 + c * 10 + d);
+	generated.push_back ((a - 1 < 0 ? 9 : a - 1) * 1000 + b * 100 + c * 10 + d);
+	generated.push_back (a * 1000 + (b + 1 > 9 ? 0 : b + 1) * 100 + c * 10 + d);
+	generated.push_back (a * 1000 + (b - 1 < 0 ? 9 : b - 1) * 100 + c * 10 + d);
+	generated.push_back (a * 1000 + b * 100 + (c + 1 > 9 ? 0 : c + 1) * 10 + d);
+	generated.push_back (a * 1000 + b * 100 + (c - 1 < 0 ? 9 : c - 1) * 10 + d);
+	generated.push_back (a * 1000 + b * 100 + c * 10 + (d + 1 > 9 ? 0 : d + 1));
+	generated.push_back (a * 1000 + b * 100 + c * 10 + (d - 1 < 0 ? 9 : d - 1));
+}
 
-	while (!q.empty()) {
-		tmp = q.front();
-		q.pop();
-
-		if (tmp.first.a == end.a && tmp.first.b == end.b && tmp.first.c == end.c && tmp.first.d == end.d) {
-			return tmp.second;
-		}
-
-		for (int i = 0; i < 8; i++) {
-			s = make_move(tmp.first, i);
-			if (!is_forbidden(s) && !is_visited(s)) {
-				visited[s.a*1000 + s.b*100 + s.c*10 + s.d] = true;
-				q.push(make_pair(s, tmp.second + 1));
+int BFS (int start, int end) {
+	queue< pair<int,int> > Q;
+	pair<int,int> P;
+	
+	if (start == end)
+		return 0;
+	
+	Q.push (pair<int,int> (start, 0));
+	taken[start] = true;
+	
+	while (!Q.empty()) {
+		P = Q.front();
+		Q.pop();
+		
+		generate (P.first);
+		
+		for (int i = 0; i < generated.size(); i++) {
+			if (generated[i] == end) {
+				return P.second + 1;
+			} else if (taken.find (generated[i]) != taken.end()) {
+				continue;
+			}
+			
+			it = find (forbidden.begin(), forbidden.end(), generated[i]);
+			if (it == forbidden.end()) {
+				Q.push (pair<int,int> (generated[i], P.second + 1));
+				taken[generated[i]] = true;
 			}
 		}
+		
+		generated.clear();
 	}
-
+	
 	return -1;
 }
 
-int main(void) {
+int main (void) {
 	int cases, n;
-
+	int a,b,c,d;
+	int start, end, f;
+	
 	cin >> cases;
-
+	
 	while (cases--) {
-		cin >> start.a >> start.b >> start.c >> start.d;
-		cin >> end.a >> end.b >> end.c >> end.d;
+		forbidden.clear();
+		generated.clear();
+		taken.clear();
+		
+		cin >> a >> b >> c >> d;
+		start = a * 1000 + b * 100 + c * 10 + d;
+		
+		cin >> a >> b >> c >> d;
+		end = a * 1000 + b * 100 + c * 10 + d;
+		
 		cin >> n;
-
-		v.clear();
-		visited.clear();
-
 		while (n--) {
-			cin >> forbidden.a >> forbidden.b >> forbidden.c >> forbidden.d;
-			v.push_back(forbidden);
+			cin >> a >> b >> c >> d;
+			f = a * 1000 + b * 100 + c * 10 + d;
+			forbidden.push_back (f);
 		}
 
-		cout << solve() << endl;
+		cout << BFS(start, end) << endl;
 	}
-
+	
 	return 0;
 }
