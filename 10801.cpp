@@ -98,7 +98,7 @@ map<vdata,unsigned int> WGraph::dijkstra(vdata begin) {
 void splitstr(const string &input, vector<int> &v) {
   stringstream in(input);
   v.clear();
-	copy(istream_iterator<int>(in), istream_iterator<int>(), back_inserter(v));
+  copy(istream_iterator<int>(in), istream_iterator<int>(), back_inserter(v));
 }
 
 int main(void) {
