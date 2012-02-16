@@ -1,114 +1,88 @@
 #include <iostream>
+#include <cstdio>
 #include <string>
-#include <sstream>
 #include <map>
 #include <vector>
-#include <iomanip>
+#include <cmath>
 using namespace std;
 
-int main (void) {
-	string input;
-	map<int,string> accounts;
-	map<int,int> sums;
-	int account;
-	vector< pair<int,int> > buf;
-	int n = 0;
-	
-	while (getline(cin, input)) {
-		account = (input[0] - 48) * 100 + (input[1] - 48) * 10 + (input[2] - 48);
-		if (account == 0) break;
-		accounts[account] = input.substr(3);
-		sums[account] = 0;
-	}
-	
-	int last = -1;
-	long count = 0;
-	
-	while (getline(cin, input)) {
-		stringstream ss;
-		long transaction, sum;
-		
-		account = (input[3] - 48) * 100 + (input[4] - 48) * 10 + input[5] - 48;
-		transaction = (input[0] - 48) * 100 + (input[1] - 48) * 10 + input[2] - 48;
-		input = input.substr(6);
-		
-		ss << input;
-		ss >> sum;
-		
-		
-		if (transaction == 0) break;
-		
-		if (last == -1)
-			last = transaction;
-		
-		if (transaction != last) {
-			if (count != 0) {
-				if (n > 0) cout << endl;
-				n++;
-				cout << "*** Transaction " << last << " is out of balance ***" << endl;
-				cout << "BUFSIZE == " << buf.size() << endl;
-				for (int i = 0; i < buf.size(); i++) {
-					cout << buf[i].first << " " << accounts[buf[i].first];
-					for (int j = 0; j < 30 - accounts[buf[i].first].size(); j++) cout << " ";
-					cout << " ";
-					
-					stringstream sstemp;
-					string temp;
-					
-					if (sums[buf[i].first] < 0) {
-						sstemp << "-";
-						sums[buf[i].first] = -sums[buf[i].first];
-					}
-					
-					sstemp << sums[buf[i].first] / 100 << "." << (sums[buf[i].first] % 100) / 10 << sums[buf[i].first] % 10;
-					temp = sstemp.str();
-					
-					for (int j = 0; j < 10 - temp.size(); j++) cout << " ";
-					cout << temp << endl;
-					
-					//cout << " " << setw(7) << sums[buf[i].first] / 100 << "." << abs((sums[buf[i].first] % 100) / 10) << abs(sums[buf[i].first] % 10) << endl;;
-					//printf(" %10.2f\n", temp);
-				}
-				
-				//double temp = count * 1.0 / 100;
-				//if (temp < 0) temp = -temp;
-				//temp = -temp;
-				//count = -count;
-				if (count < 0) count = -count;
-				cout << 999 << " Out of Balance                 ";
-				
-				stringstream sstemp;
-				string temp;
-				
-				if (count < 0) {
-					sstemp << "-";
-					count = -count;
-				}
-				sstemp << count / 100 << "." << (count % 100) / 10 << count % 10;
-				temp = sstemp.str();
-				
-				for (int j = 0; j < 10 - temp.size(); j++) cout << " ";
-				cout << temp << endl; 
-				
-				//cout << setw(7) << count / 100 << "." << abs((count % 100) / 10) << abs(count % 10) << endl;
-				//printf("%10.2f\n", temp);
-			}
-			
-			last = transaction;
-			count = 0;
-			for (int j = 0; j < buf.size(); j++)
-				sums[buf[j].first] = 0;
-			
-			buf.clear();
-		}
-		
-		count += sum;
-		if (sums[account] > 0) sums[account] += sum;
-		else {
-			sums[account] = sum;
-			buf.push_back( pair<int,int>(account, sum) );
-		}
-	}
-	
-	return 0;
+int read_account_number() {
+  char c;
+  int result = 0;
+
+  for (int i = 0; i < 3; i++) {
+    cin >> c;
+    result = result * 10 + (c - '0');
+  }
+
+  return result;
+}
+
+int main(void)
+{
+  int account_number, old_transaction_number = -1, transaction_number, amount_in_dollars;
+  string account_name;
+  map<int, string> accounts;
+
+  while (true) {
+    account_number = read_account_number();
+    getline(cin, account_name);
+
+    if (account_number == 0) {
+      break;
+    }
+
+    accounts[account_number] = account_name;
+  }
+
+  // keep the input order of transactions
+  vector< pair<int, int> > payments;
+
+  // verifying balance
+  int balance = 0;
+
+  while (true) {
+    transaction_number = read_account_number();
+    account_number = read_account_number();
+    cin >> amount_in_dollars;
+
+    // account_name is used as a filler to finish off the line
+    getline(cin, account_name);
+
+    if (old_transaction_number == -1 || transaction_number == old_transaction_number) {
+      payments.push_back(make_pair(account_number, amount_in_dollars));
+      balance += amount_in_dollars;
+    } else {
+      // transaction sequence number has changed, time to print a report
+      // if the balance is anything other than zero
+      if (balance != 0) {
+        printf("*** Transaction %03d is out of balance ***\n", old_transaction_number);
+
+        for (int i = 0, sz = payments.size(); i < sz; i++) {
+          printf("%03d ", payments[i].first);
+          printf("%-30s ", accounts[payments[i].first].c_str());
+          printf("%10.2f\n", payments[i].second / 100.0);
+        }
+
+        balance *= -1;
+        printf("999 Out of Balance                 %10.2f\n", balance / 100.0);
+
+        cout << endl;
+      }
+
+      payments.clear();
+      balance = 0;
+
+      payments.push_back(make_pair(account_number, amount_in_dollars));
+      balance += amount_in_dollars;
+    }
+
+    old_transaction_number = transaction_number;
+
+    if (transaction_number == 0) {
+      break;
+    }
+  }
+  
+  return 0;
 }
