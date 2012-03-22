@@ -15,6 +15,9 @@ bool is_good_reading(int m, pair<int,int> &low, pair<int,int> &high) {
     if ((m+1) % 6 != 0)
         return false;
 
+    if ((m+1)/6 < 5)
+        return false;
+
     rep (i, m) {
         if (low.first <= readings[i] && readings[i] <= low.second || high.first <= readings[i] && readings[i] <= high.second)
             continue;
@@ -171,8 +174,15 @@ int main(void) {
                 lowest = readings[i];
         }
 
-        pair<int,int> low = make_pair(lowest, int(lowest / 0.95));
-        pair<int,int> high = make_pair(int(highest / 1.05), highest);
+        if (int(highest * 1.0 / lowest + 0.5) != 2) {
+            cout << "bad code" << endl;
+            continue;
+        }
+
+        double tmp = lowest / 0.95;
+        pair<int,int> low = make_pair(lowest, int(tmp + 0.05 * tmp));
+        tmp = highest / 1.05;
+        pair<int,int> high = make_pair(int(tmp - 0.05 * tmp), highest);
 
         if (!is_good_reading(m, low, high)) {
             cout << "bad code" << endl;
