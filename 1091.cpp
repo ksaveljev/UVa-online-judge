@@ -94,12 +94,22 @@ int decode(int pos, pair<int,int> &low, pair<int,int> &high) {
 bool transform_readings(int m, pair<int,int> &low, pair<int,int> &high) {
     bool ok = true;
     int counter = 0;
+    int start_end_counter = 0;
 
     for (int i = 0; i < m; i += 6) {
         int character = decode(i, low, high);
         if (character == -1) {
             ok = false;
             break;
+        }
+
+        if (character == 110) {
+            start_end_counter++;
+
+            if (start_end_counter > 2) {
+                ok = false;
+                break;
+            }
         }
 
         transformed[counter] = character;
