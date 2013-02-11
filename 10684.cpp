@@ -1,49 +1,30 @@
 #include <iostream>
 using namespace std;
 
-struct result {
-  int value;
-  int start;
-  int end;
-  result() : value(-2000000000), start(0), end(0) {}
-};
+#define REP(i, b, n) for (int i = b; i < n; i++)
+#define rep(i, n) REP(i, 0, n)
 
 int main(void) {
-  int n;
-  int nums[10001];
+    int n, bets[10001];
 
-  while (cin >> n) {
-    if (n == 0)
-      break;
+    while ((cin >> n) && n) {
+        rep (i,n)
+            cin >> bets[i];
 
-    for (int i = 0; i < n; i++)
-      cin >> nums[i];
+        int current = 0;
+        int best = 0;
+        rep (i, n) {
+            current += bets[i];
+            current = current < 0 ? 0 : current;
+            if (current > best)
+                best = current;
+        }
 
-    result best;
-    result current;
-
-    current.value = 0;
-
-    for (current.end = 0; current.end < n; current.end++) {
-      current.value += nums[current.end];
-      if (current.value > best.value) {
-        best.value = current.value;
-        best.start = current.start;
-        best.end = current.end;
-      }
-
-      if (current.value < 0) {
-        current.value = 0;
-        current.start = current.end + 1;
-      }
+        if (best == 0)
+            cout << "Losing streak." << endl;
+        else
+            cout << "The maximum winning streak is " << best << "." << endl;
     }
 
-    if (best.value <= 0) {
-      cout << "Losing streak." << endl;
-    } else {
-      cout << "The maximum winning streak is " << best.value << "." << endl;
-    }
-  }
-
-  return 0;
+    return 0;
 }
