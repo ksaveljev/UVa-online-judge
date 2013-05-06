@@ -2,7 +2,9 @@
 using namespace std;
 
 #define REP(i, b, n) for (int i = b; i < n; i++)
+#define REPI(i, b, n) for (int i = b; i <= n; i++)
 #define rep(i, n) REP(i, 0, n)
+#define repi(i, n) REPI(i, 0, n)
 
 int main(void) {
 
