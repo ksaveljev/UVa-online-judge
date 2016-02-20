@@ -50,3 +50,14 @@ int main (void) {
 	
 	return 0;
 }
+/* Hello sir,
+    First of all, I would like to thank you for the UVa online judge exercises
+    that you have posted on your github repository. They have really helped
+    me with the exercises I struggled with and I really admire your intelligencein solving some difficult problems.
+    I am taking a Competitive programming course in my university. In the first quiz I did 1/2 exercises and I lost
+    10% of the final grade. I cannot afford to lose many points because I have to maintain a 3.5 GPA
+    and I am in a very stresful situation at the moment, because the professor assumes
+    we have some experience in competitive  programming, which I don't.
+    I would be really grateful if you could help me.Thank you
+    Best regards.
+*/
