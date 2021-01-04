@@ -1,8 +1,14 @@
 #include <iostream>
+#include <string>
+#include <vector>
+#include <map>
+#include <set>
+#include <queue>
+#include <algorithm>
+#include <tuple>
+#include <cmath>
+#include <cstdio>
 using namespace std;
-
-#define REP(i, b, n) for (int i = b; i < n; i++)
-#define rep(i, n) REP(i, 0, n)
 
 int main(void) {
 
