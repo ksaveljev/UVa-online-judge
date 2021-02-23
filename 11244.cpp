@@ -1,184 +1,36 @@
-#include <iostream>
-#include <string>
-#include <queue>
+#include<bits/stdc++.h>
 using namespace std;
-
-char sky[100][100];
-int total;
-
-struct pos {
-	int r;
-	int c;
-};
-
-void remove_object(int r, int c, int max_r, int max_c) {
-	pos tmp;
-	tmp.r = r;
-	tmp.c = c;
-	sky[r][c] = '.';
-	queue<pos> q;
-
-	q.push(tmp);
-
-	while (!q.empty()) {
-		tmp = q.front();
-		q.pop();
-
-		r = tmp.r;
-		c = tmp.c;
-
-		total--;
-
+int main()
+{
+	int r, c, count;
+	char input[102][102], temp;
+	for(int i=0; i<102; i++){input[0][i]='.'; input[i][0]='.';}
+	do
+	{
+		cin>>r>>c;
+		cin.ignore();
+		if(r==0 && c==0) break;
+		count=0;
+		for(int i=1; i<=r; i++)
+		{
+			for(int j=1; j<=c; j++)
+				cin.get(input[i][j]);
+			cin.ignore();
+			input[i][c+1]='.';
+		}
+		for(int i=1; i<=c+1; i++) input[r+1][i]='.';
 		
-		if (r > 0) {
-			if (sky[r-1][c] == '*') {
-				tmp.r = r-1;
-				tmp.c = c;
-				q.push(tmp);
-				sky[tmp.r][tmp.c] = '.';
-			}
-		}
-
-		if (c > 0) {
-			if (sky[r][c-1] == '*') {
-				tmp.r = r;
-				tmp.c = c-1;
-				q.push(tmp);
-				sky[tmp.r][tmp.c] = '.';
-			}
-		}
-
-		if (r < max_r - 1) {
-			if (sky[r+1][c] == '*') {
-				tmp.r = r+1;
-				tmp.c = c;
-				q.push(tmp);
-				sky[tmp.r][tmp.c] = '.';
-			}
-		}
-
-		if (c < max_c - 1) {
-			if (sky[r][c+1] == '*') {
-				tmp.r = r;
-				tmp.c = c+1;
-				q.push(tmp);
-				sky[tmp.r][tmp.c] = '.';
-			}
-		}
-
-		if (r > 0 && c > 0) {
-			if (sky[r-1][c-1] == '*') {
-				tmp.r = r-1;
-				tmp.c = c-1;
-				q.push(tmp);
-				sky[tmp.r][tmp.c] = '.';
-			}
-		}
-
-		if (r < max_r - 1 && c < max_c - 1) {
-			if (sky[r+1][c+1] == '*') {
-				tmp.r = r+1;
-				tmp.c = c+1;
-				q.push(tmp);
-				sky[tmp.r][tmp.c] = '.';
-			}
-		}
-
-		if (r > 0 && c < max_c - 1) {
-			if (sky[r-1][c+1] == '*') {
-				tmp.r = r-1;
-				tmp.c = c+1;
-				q.push(tmp);
-				sky[tmp.r][tmp.c] = '.';
-			}
-		}
-
-		if (r < max_r - 1 && c > 0) {
-			if (sky[r+1][c-1] == '*') {
-				tmp.r = r+1;
-				tmp.c = c-1;
-				q.push(tmp);
-				sky[tmp.r][tmp.c] = '.';
-			}
-		}
-	}
-}
-
-void check_star(int r, int c, int max_r, int max_c) {
-	bool good_star = true;
-
-	if (r > 0) {
-		if (sky[r-1][c] == '*') {
-			remove_object(r, c, max_r, max_c);
-		}
-	}
-
-	if (c > 0) {
-		if (sky[r][c-1] == '*') {
-			remove_object(r, c, max_r, max_c);
-		}
-	}
-
-	if (r < max_r - 1) {
-		if (sky[r+1][c] == '*')
-			remove_object(r, c, max_r, max_c);
-	}
-
-	if (c < max_c - 1) {
-		if (sky[r][c+1] == '*')
-			remove_object(r, c, max_r, max_c);
-	}
-
-	if (r > 0 && c > 0) {
-		if (sky[r-1][c-1] == '*')
-			remove_object(r, c, max_r, max_c);
-	}
-
-	if (r < max_r - 1 && c < max_c - 1) {
-		if (sky[r+1][c+1] == '*')
-			remove_object(r, c, max_r, max_c);
-	}
-
-	if (r > 0 && c < max_c - 1) {
-		if (sky[r-1][c+1] == '*')
-			remove_object(r, c, max_r, max_c);
-	}
-
-	if (r < max_r - 1 && c > 0) {
-		if (sky[r+1][c-1] == '*')
-			remove_object(r, c, max_r, max_c);
-	}
-}
-
-int main(void) {
-	int r, c;
-	string input;
-
-	while (cin >> r >> c) {
-		if (r == 0 && c == 0)
-			break;
-
-		total = 0;
-
-		for (int i = 0; i < r; i++) {
-			cin >> input;
-			for (int y = 0; y < c; y++) {
-				sky[i][y] = input[y];
-				if (input[y] == '*')
-					total++;
-			}
-		}
-
-		for (int i = 0; i < r; i++) {
-			for (int y = 0; y < c; y++) {
-				if (sky[i][y] == '*') {
-					check_star(i, y, r, c);
+		for(int i=1; i<=r; i++)
+		{
+			for(int j=1; j<=c; j++)
+			{
+				if(input[i][j]=='*')
+				{
+					if(!(input[i-1][j-1]=='*'||input[i-1][j]=='*'||input[i-1][j+1]=='*'||input[i][j-1]=='*'||input[i][j+1]=='*'||input[i+1][j-1]=='*'||input[i+1][j]=='*'||input[i+1][j+1]=='*'))count++;
 				}
 			}
 		}
-
-		cout << total << endl;
-	}
-
+		cout<<count<<endl;
+	}while(true);
 	return 0;
 }
