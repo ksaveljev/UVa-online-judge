@@ -2,7 +2,7 @@
 #include <stdlib.h>
 using namespace std;
 
-int main (void) {
+int main () {
 	int *tbl;
 	tbl = (int*)malloc(sizeof(int)*1000000);
 	memset (tbl, 0, 1000000);
